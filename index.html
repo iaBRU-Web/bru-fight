@@ -161,7 +161,7 @@
     <div id="finalStats"></div>
     <button id="newGame" onclick="location.reload()">🔄 RETRY</button>
 </div>
-    <style>
+        <style>
         :root {
             --bg: #000011;
             --panel: rgba(0, 20, 40, 0.92);
@@ -302,7 +302,7 @@
         }
 
         /* Particles bg */
-        #loadBg { position: absolute; inset: 0; overflow: hidden; }
+        #loadBg { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
         .loadStar {
             position: absolute; border-radius: 50%;
             animation: starDrift linear infinite;
@@ -445,7 +445,7 @@ const _loadInterval = setInterval(() => {
         setTimeout(() => {
             const el = document.getElementById('loading');
             el.classList.add('fadeout');
-            setTimeout(() => { el.style.display = 'none'; document.getElementById('menu').classList.add('active'); }, 500);
+            setTimeout(() => { el.remove(); document.getElementById('menu').classList.add('active'); }, 500);
         }, 300);
     }
 }, 500); // 6 stages × 500ms = 3 seconds total
@@ -518,6 +518,7 @@ document.getElementById('particlesEnabled').checked = cfg.particles;
 function setMusicVol(v) { cfg.musicVol = +v; if(bgmGain) bgmGain.gain.value = cfg.musicVol / 1000; }
 function setSfxVol(v) { cfg.sfxVol = +v; }
 function showSettings() { document.getElementById('settings').classList.add('active'); }
+window.showSettings = showSettings;
 function closeSettings() {
     cfg.shake = document.getElementById('shakeEnabled').checked;
     cfg.dmgNums = document.getElementById('dmgNumsEnabled').checked;
@@ -525,8 +526,11 @@ function closeSettings() {
     saveCfg();
     document.getElementById('settings').classList.remove('active');
 }
+window.closeSettings = closeSettings;
 function showTutorial() { document.getElementById('tutorial').classList.add('active'); }
+window.showTutorial = showTutorial;
 function closeTutorial() { document.getElementById('tutorial').classList.remove('active'); }
+window.closeTutorial = closeTutorial;
 
 // ─────────────────────────────────────────────
 // MOBILE TOGGLE
@@ -537,6 +541,7 @@ function toggleMobile() {
     document.getElementById('joystickArea').style.display = mobileMode ? 'block' : 'none';
     document.getElementById('actionBtns').style.display = mobileMode ? 'flex' : 'none';
 }
+window.toggleMobile = toggleMobile;
 
 // ─────────────────────────────────────────────
 // STATS TRACKING
@@ -569,6 +574,7 @@ function showStatsNow() {
     `;
     el.classList.toggle('active');
 }
+window.showStatsNow = showStatsNow;
 
 // ─────────────────────────────────────────────
 // AUDIO ENGINE
@@ -1513,12 +1519,14 @@ function pauseGame() {
     gamePaused=true; gameRunning=false;
     document.getElementById('pauseMenu').classList.add('active');
 }
+window.pauseGame = pauseGame;
 function resumeGame() {
     gamePaused=false; gameRunning=true;
     document.getElementById('pauseMenu').classList.remove('active');
     document.getElementById('settings').classList.remove('active');
     document.getElementById('statsPanel').classList.remove('active');
 }
+window.resumeGame = resumeGame;
 
 // ─────────────────────────────────────────────
 // INPUT
@@ -1529,7 +1537,10 @@ document.addEventListener('keydown', e=>{
         if(gamePaused) resumeGame(); else pauseGame();
     }
     if(e.code==='KeyR'&&!gameRunning) location.reload();
-    e.preventDefault();
+    // Only prevent default for game keys during active gameplay, never block Tab/Enter/clicks
+    if(gameRunning && !gamePaused && ['KeyA','KeyD','KeyW','KeyS','Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) {
+        e.preventDefault();
+    }
 }, {passive:false});
 document.addEventListener('keyup', e=>{ keys[e.code]=false; });
 
@@ -1625,19 +1636,12 @@ window.startGame = function(mode) {
 window.continueStory = function() {
     document.getElementById('shop').classList.remove('active');
     inShop=false; currentWave=1;
-    // Spawn pickups between sections
     for(let i=0;i<3;i++) spawnPickup(['health','ammo','power'][i%3], new THREE.Vector3(rand(-18,18),0,0));
     startWave();
     gameRunning=true;
 };
 
-window.toggleMobile = toggleMobile;
-window.showSettings = showSettings;
-window.closeSettings = closeSettings;
-window.showTutorial = showTutorial;
-window.closeTutorial = closeTutorial;
-window.resumeGame = resumeGame;
-window.showStatsNow = showStatsNow;
+// (window.toggleMobile, showSettings, showTutorial, closeTutorial already assigned above)
 
 // ─────────────────────────────────────────────
 // AMBIENT LIGHTING CHANGES
