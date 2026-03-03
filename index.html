@@ -580,15 +580,15 @@ resize();
 window.addEventListener('resize',resize);
 
 // ══════════════════════════════════════════════
-// GAME CONSTANTS — 3× speed model
+// GAME CONSTANTS — 9× speed model
 // ══════════════════════════════════════════════
 const FLOOR=()=>canvas.height-115;
 const LWALL=40;
 const RWALL=()=>canvas.width-40;
-const SPD=3.0;           // global physics speed multiplier (3× original)
-const PROJ_MULT=3.2;     // projectile speed extra multiplier
-const PLR_DMG=3.5;       // player damage multiplier
-const AI_DMG=0.38;       // AI damage multiplier (reduced to player)
+const SPD=9.0;           // global physics speed multiplier (3× original)
+const PROJ_MULT=7.2;     // projectile speed extra multiplier
+const PLR_DMG=13.5;       // player damage multiplier
+const AI_DMG=0.2;       // AI damage multiplier (reduced to player)
 const SECTION_THEMES=[
   'CYBER DISTRICT','NEON RUINS','BLOOD ARENA','SHADOW REALM','GOLD VAULT',
   'TOXIC WASTELAND','ICE CITADEL','MAGMA CORE','STORM PEAK','VOID RIFT',
@@ -750,7 +750,7 @@ function makeEnemy(x,isBoss=false,isGiant=false){
 }
 
 // ══════════════════════════════════════════════
-// PHYSICS — 3× speed
+// PHYSICS — 9× speed
 // ══════════════════════════════════════════════
 function physics(e,dt){
   e.prevX=e.x;e.prevY=e.y;
@@ -782,7 +782,7 @@ function physics(e,dt){
 }
 
 // ══════════════════════════════════════════════
-// PLAYER UPDATE — 3× speed, all controls
+// PLAYER UPDATE — 9× speed, all controls
 // ══════════════════════════════════════════════
 function updatePlayer(dt){
   const p=player;
